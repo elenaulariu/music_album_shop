@@ -1,0 +1,8 @@
+/album-shop-frontend
+/album-shop-backend/venv
+/album-shop-backend/__pycache__/
+/album-shop-backend/.pytest_cache
+/album-shop-backend/migrations
+/album-shop-backend/auth/__pycache__/
+/album-shop-backend/db/__pycache__/
+/album-shop-backend/routes/__pycache__/

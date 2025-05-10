@@ -1,0 +1,242 @@
+{
+	"id": "a522a55d-f779-4fa9-9547-fee043e3145e",
+	"name": "Music Album Shop API",
+	"timestamp": "2025-04-17T22:10:56.200Z",
+	"collection_id": "31060986-bc6b5f24-fe00-4939-a65f-9f76fc25e182",
+	"folder_id": 0,
+	"environment_id": "31060986-8dbc6796-02ed-420b-9585-8520de2bf525",
+	"totalPass": 0,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-04-17T22:10:54.060Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "ad05826f-da58-44db-a185-a3ab021dde85",
+			"name": "Register User (Regular)",
+			"url": "http://localhost:5000/register",
+			"time": 84,
+			"responseCode": {
+				"code": 409,
+				"name": "CONFLICT"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				84
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "a55ee7bb-6565-441b-a587-e0c24fa90f81",
+			"name": "Register Admin User",
+			"url": "http://localhost:5000/register",
+			"time": 16,
+			"responseCode": {
+				"code": 409,
+				"name": "CONFLICT"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				16
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "24e5165f-2f76-4801-8a83-fe5b3b145e35",
+			"name": "Login as Admin",
+			"url": "http://localhost:5000/login",
+			"time": 16,
+			"responseCode": {
+				"code": 401,
+				"name": "UNAUTHORIZED"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				16
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "1c9acbde-1e4f-4b70-be01-da533c2b4535",
+			"name": "Login as User",
+			"url": "http://localhost:5000/login",
+			"time": 12,
+			"responseCode": {
+				"code": 401,
+				"name": "UNAUTHORIZED"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				12
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "eef03086-f303-45b5-bad6-d8e6e7f24aac",
+			"name": "Create Album (Admin Only)",
+			"url": "http://localhost:5000/albums",
+			"time": 11,
+			"responseCode": {
+				"code": 422,
+				"name": "UNPROCESSABLE ENTITY"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				11
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "f978bab5-0fb3-4ee1-a15a-0a3787c7136c",
+			"name": "Create Album (User Should Fail)",
+			"url": "http://localhost:5000/albums",
+			"time": 12,
+			"responseCode": {
+				"code": 422,
+				"name": "UNPROCESSABLE ENTITY"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				12
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "29b3d0a6-15c9-42fb-808b-1856d35803be",
+			"name": "Get All Albums",
+			"url": "http://localhost:5000/albums",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				16
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "38129cd8-feef-44f5-a630-d021b97b44d9",
+			"name": "Get Single Album by ID",
+			"url": "http://localhost:5000/albums/1",
+			"time": 14,
+			"responseCode": {
+				"code": 404,
+				"name": "NOT FOUND"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				14
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "d25afa5f-cabb-4b96-a8fc-96df39acd833",
+			"name": "Update Album (Admin Only)",
+			"url": "http://localhost:5000/albums/1",
+			"time": 10,
+			"responseCode": {
+				"code": 422,
+				"name": "UNPROCESSABLE ENTITY"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				10
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "89fe1fc5-cc66-46ed-9d92-e6b18644f35f",
+			"name": "Delete Album (Admin Only)",
+			"url": "http://localhost:5000/albums/1",
+			"time": 10,
+			"responseCode": {
+				"code": 422,
+				"name": "UNPROCESSABLE ENTITY"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				10
+			],
+			"allTests": [
+				{}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 201,
+	"collection": {
+		"requests": [
+			{
+				"id": "ad05826f-da58-44db-a185-a3ab021dde85",
+				"method": "POST"
+			},
+			{
+				"id": "a55ee7bb-6565-441b-a587-e0c24fa90f81",
+				"method": "POST"
+			},
+			{
+				"id": "24e5165f-2f76-4801-8a83-fe5b3b145e35",
+				"method": "POST"
+			},
+			{
+				"id": "1c9acbde-1e4f-4b70-be01-da533c2b4535",
+				"method": "POST"
+			},
+			{
+				"id": "eef03086-f303-45b5-bad6-d8e6e7f24aac",
+				"method": "POST"
+			},
+			{
+				"id": "f978bab5-0fb3-4ee1-a15a-0a3787c7136c",
+				"method": "POST"
+			},
+			{
+				"id": "29b3d0a6-15c9-42fb-808b-1856d35803be",
+				"method": "GET"
+			},
+			{
+				"id": "38129cd8-feef-44f5-a630-d021b97b44d9",
+				"method": "GET"
+			},
+			{
+				"id": "d25afa5f-cabb-4b96-a8fc-96df39acd833",
+				"method": "PUT"
+			},
+			{
+				"id": "89fe1fc5-cc66-46ed-9d92-e6b18644f35f",
+				"method": "DELETE"
+			}
+		]
+	}
+}

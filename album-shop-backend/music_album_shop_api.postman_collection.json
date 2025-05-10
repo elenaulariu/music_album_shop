@@ -1,0 +1,289 @@
+{
+    "info": {
+        "name": "Music Album Shop API",
+        "description": "Testing album CRUD operations with user roles (admin/user).",
+        "_postman_id": "a-unique-id",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Register User (Regular)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"username\": \"testuser\", \"email\": \"user@test.com\", \"password\": \"userpass\"}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "register"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Register Admin User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"username\": \"adminuser\", \"email\": \"admin@test.com\", \"password\": \"adminpass\", \"role\": \"admin\", \"admin_code\": \"supersecretadmincode\"}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "register"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Login as Admin",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\": \"admin@test.com\", \"password\": \"adminpass\"}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "login"
+                    ]
+                }
+            },
+            "test": "// Check if the login was successful\nif (pm.response.code === 200) {\n    // Store the admin token in the environment variable\n    var jsonData = pm.response.json();\n    pm.environment.set(\"admin_token\", jsonData.access_token);\n}"
+        },
+        {
+            "name": "Login as User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\": \"user@test.com\", \"password\": \"userpass\"}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "login"
+                    ]
+                }
+            },
+            "test": "// Check if the login was successful\nif (pm.response.code === 200) {\n    // Store the user token in the environment variable\n    var jsonData = pm.response.json();\n    pm.environment.set(\"user_token\", jsonData.access_token);\n}"
+        },
+        {
+            "name": "Create Album (Admin Only)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"title\": \"Test Album\", \"artist\": \"Test Artist\", \"release_date\": \"2024-01-01\", \"genre\": \"Rock\", \"price\": 19.99}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/albums",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Create Album (User Should Fail)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"title\": \"Not Allowed\", \"artist\": \"Nope\", \"release_date\": \"2024-01-01\", \"genre\": \"Jazz\", \"price\": 12.99}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/albums",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get All Albums",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:5000/albums",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Single Album by ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:5000/albums/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums",
+                        "1"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Update Album (Admin Only)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"title\": \"Updated Album Title\"}"
+                },
+                "url": {
+                    "raw": "http://localhost:5000/albums/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums",
+                        "1"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Delete Album (Admin Only)",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:5000/albums/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5000",
+                    "path": [
+                        "albums",
+                        "1"
+                    ]
+                }
+            }
+        }
+    ]
+}
