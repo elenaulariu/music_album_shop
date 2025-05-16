@@ -38,65 +38,17 @@ class Album(db.Model):
     release_date = db.Column(db.Date, nullable=False)
     genre = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=0)  # NEW
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+    image_url = db.Column(db.String(255))  # ✅ NEW: Image URL
 
-    def __init__(self, title, artist, release_date, genre, price, quantity):
+    def __init__(self, title, artist, release_date, genre, price, quantity, image_url=None):
         self.title = title
         self.artist = artist
         self.release_date = release_date
         self.genre = genre
         self.price = price
         self.quantity = quantity
-
-#Review Model
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-
-db = SQLAlchemy()
-bcrypt = Bcrypt()
-
-# User Model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(10), default='user', nullable=False)  # 'user' or 'admin'
-
-    def __init__(self, username, email, password, role='user'):
-        self.username = username
-        self.email = email
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-        self.role = role
-
-# Blacklisted Tokens Model
-class BlacklistToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    jti = db.Column(db.String(128), unique=True, nullable=False)  # JWT Token Identifier
-    created_at = db.Column(db.DateTime, server_default=db.func.now())  # Timestamp
-
-    def __init__(self, jti):
-        self.jti = jti
-
-# Album Model
-class Album(db.Model):
-    __tablename__ = 'album'
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
-    artist = db.Column(db.String(120), nullable=False)
-    release_date = db.Column(db.Date, nullable=False)
-    genre = db.Column(db.String(50), nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=0)  # NEW
-
-    def __init__(self, title, artist, release_date, genre, price, quantity):
-        self.title = title
-        self.artist = artist
-        self.release_date = release_date
-        self.genre = genre
-        self.price = price
-        self.quantity = quantity
+        self.image_url = image_url
 
 #Review Model
 class Review(db.Model):

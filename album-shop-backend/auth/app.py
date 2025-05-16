@@ -3,7 +3,7 @@ from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 )
 from flask_bcrypt import Bcrypt
-from db.app import db, User, Album, Review, Order, BlacklistToken
+from db.app import db, User, BlacklistToken
 from datetime import timedelta
 import os
 
@@ -21,7 +21,6 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 with app.app_context():
-    db.drop_all()
     db.create_all()
 
 # Register
@@ -73,7 +72,7 @@ def login():
     # Create an access token with only the username as identity
     access_token = create_access_token(identity=user.username)
 
-    return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
+    return jsonify({'message': 'Login successful', 'access_token': access_token, 'username': user.username}), 200
 
 # Logout
 @app.route('/logout', methods=['POST'])
@@ -167,6 +166,30 @@ def delete_all_users():
     db.session.commit()
     return jsonify({'message': 'All users deleted successfully'}), 200
 
+@app.route('/users/me', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "username": user.username,
+        "role": user.role
+    }), 200
+
+@app.route('/users/<int:user_id>', methods=['GET'])
+def get_user_by_id(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    return jsonify({
+        'id': user.id,
+        'username': user.username
+    }), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

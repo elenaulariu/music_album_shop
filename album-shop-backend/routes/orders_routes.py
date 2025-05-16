@@ -100,7 +100,12 @@ def delete_order(order_id):
     if user.id != order.user_id and user.role != 'admin':
         return jsonify({'error': 'Unauthorized to delete this order'}), 403
 
+    # Restore album quantity
+    album = Album.query.get(order.album_id)
+    if album:
+        album.quantity += order.quantity
+
     db.session.delete(order)
     db.session.commit()
 
-    return jsonify({'message': f'Order {order_id} deleted'}), 200
+    return jsonify({'message': f'Order {order_id} deleted and stock restored'}), 200

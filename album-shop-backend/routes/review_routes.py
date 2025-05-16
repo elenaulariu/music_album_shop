@@ -6,6 +6,7 @@ from datetime import datetime
 
 reviews_bp = Blueprint('reviews', __name__, url_prefix='/reviews')
 
+
 # Create a review
 @reviews_bp.route('/', methods=['POST'])
 @jwt_required()
@@ -32,6 +33,30 @@ def create_review():
         return jsonify({'message': 'Review added successfully'}), 201
     except Exception as e:
         return jsonify({'error': 'Invalid input or server error', 'details': str(e)}), 500
+
+# Get all reviews (admin only)
+@reviews_bp.route('/', methods=['GET'])
+@jwt_required()
+def get_all_reviews():
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(username=current_user).first()
+
+    if not user or user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+
+    reviews = Review.query.all()
+    return jsonify([
+        {
+            'id': r.id,
+            'album_id': r.album_id,
+            'user_id': r.user_id,
+            'rating': r.rating,
+            'comment': r.comment,
+            'created_at': r.created_at.isoformat() if r.created_at else None,
+            'updated_at': r.updated_at.isoformat() if r.updated_at else None
+        }
+        for r in reviews
+    ])
 
 # Get all reviews for a specific album
 @reviews_bp.route('/album/<int:album_id>', methods=['GET'])
@@ -92,9 +117,12 @@ def delete_review(review_id):
     user = User.query.filter_by(username=current_user).first()
     review = Review.query.get(review_id)
 
-    if not review or review.user_id != user.id:
-        return jsonify({'error': 'Not authorized to delete this review'}), 403
+    if not review:
+        return jsonify({'error': 'Review not found'}), 404
 
+    if review.user_id != user.id and user.role != 'admin':
+        return jsonify({'error': 'Not authorized to delete this review'}), 403
+    
     db.session.delete(review)
     db.session.commit()
     return jsonify({'message': 'Review deleted successfully'}), 200
