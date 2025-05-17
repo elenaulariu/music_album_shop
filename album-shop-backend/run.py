@@ -6,7 +6,6 @@ from routes.orders_routes import orders_bp
 
 CORS(app, resources={r"/*": {"origins": "*"}},  supports_credentials=True)
 
-# Now register the blueprints
 app.register_blueprint(album_bp)
 app.register_blueprint(reviews_bp)
 app.register_blueprint(orders_bp)

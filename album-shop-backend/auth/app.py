@@ -79,7 +79,7 @@ def login():
 @jwt_required()
 def logout():
     jti = get_jwt()['jti']  # Get the JWT ID (unique identifier for the token)
-    current_user = get_jwt_identity()  # This will return the username since that's in the token
+    current_user = get_jwt_identity()
 
     # Blacklist the token (invalidate it)
     blacklisted_token = BlacklistToken(jti=jti)
@@ -108,7 +108,6 @@ def protected():
 @jwt_required()
 def admin_only():
     current_user = get_jwt_identity()  # Get the username from the token
-    # Assuming `User` has a `role` attribute in the database
     user = User.query.filter_by(username=current_user).first()
     if user.role != 'admin':
         return jsonify({'error': 'Admins only'}), 403

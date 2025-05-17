@@ -1,0 +1,742 @@
+openapi: 3.0.3
+info:
+  title: Music Store API
+  description: API for user authentication, albums, orders, and reviews.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          example: johndoe@example.com
+        role:
+          type: string
+          enum: [user, admin]
+          example: admin
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+        role:
+          type: string
+          enum: [user, admin]
+          example: admin
+        admin_code:
+          type: string
+          example: supersecretadmincode
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Login successful
+        access_token:
+          type: string
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
+        username:
+          type: string
+          example: johndoe
+
+    Album:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Thriller
+        artist:
+          type: string
+          example: Michael Jackson
+        release_date:
+          type: string
+          format: date
+          example: 1982-11-30
+        genre:
+          type: string
+          example: Pop
+        price:
+          type: number
+          format: float
+          example: 9.99
+        quantity:
+          type: integer
+          example: 100
+        image_url:
+          type: string
+          format: uri
+          example: http://example.com/thriller.jpg
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        album_id:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 2
+        total_price:
+          type: number
+          format: float
+          example: 19.98
+        order_date:
+          type: string
+          format: date-time
+          example: 2025-05-16T12:00:00Z
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        album_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Amazing album!
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-05-16T12:00:00Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-05-16T13:00:00Z
+
+security:
+  - BearerAuth: []
+
+paths:
+
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+        '400':
+          description: Missing required fields
+        '403':
+          description: Invalid admin code
+        '409':
+          description: User already exists
+
+  /login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Missing email or password
+        '401':
+          description: Invalid credentials
+
+  /logout:
+    post:
+      summary: Logout current user (invalidate token)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+        '401':
+          description: Unauthorized (missing or invalid token)
+
+  /protected:
+    get:
+      summary: Access protected route for authenticated users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Protected content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, johndoe. This is a protected route.
+        '401':
+          description: Unauthorized
+
+  /admin-only:
+    get:
+      summary: Admin only protected route
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Admin content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Welcome, admin johndoe!
+        '403':
+          description: Forbidden - Admins only
+        '401':
+          description: Unauthorized
+
+  /users:
+    get:
+      summary: Get all users (admin only)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '403':
+          description: Forbidden - Admins only
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete all users (admin only)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All users deleted successfully
+        '403':
+          description: Forbidden - Admins only
+        '401':
+          description: Unauthorized
+
+  /users/{user_id}:
+    get:
+      summary: Get user by ID
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: User ID
+      responses:
+        '200':
+          description: User data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete a specific user by ID (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: User ID
+      responses:
+        '200':
+          description: User deleted successfully
+        '403':
+          description: Forbidden - Admins only
+        '404':
+          description: User not found
+
+  /users/me:
+    get:
+      summary: Get current authenticated user's info
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /albums:
+    get:
+      summary: Get all albums (public)
+      responses:
+        '200':
+          description: List of albums
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+
+    post:
+      summary: Create a new album (admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - artist
+                - release_date
+                - genre
+                - price
+                - quantity
+              properties:
+                title:
+                  type: string
+                  example: Thriller
+                artist:
+                  type: string
+                  example: Michael Jackson
+                release_date:
+                  type: string
+                  format: date
+                  example: 1982-11-30
+                genre:
+                  type: string
+                  example: Pop
+                price:
+                  type: number
+                  format: float
+                  example: 9.99
+                quantity:
+                  type: integer
+                  example: 100
+                image_url:
+                  type: string
+                  format: uri
+                  example: http://example.com/thriller.jpg
+      responses:
+        '201':
+          description: Album created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '403':
+          description: Forbidden - Admins only
+        '400':
+          description: Invalid input
+
+  /albums/{album_id}:
+    get:
+      summary: Get album by ID
+      parameters:
+        - in: path
+          name: album_id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      responses:
+        '200':
+          description: Album data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '404':
+          description: Album not found
+
+    put:
+      summary: Update album by ID (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: album_id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                artist:
+                  type: string
+                release_date:
+                  type: string
+                  format: date
+                genre:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                quantity:
+                  type: integer
+                image_url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Album updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '403':
+          description: Forbidden - Admins only
+        '404':
+          description: Album not found
+
+    delete:
+      summary: Delete album by ID (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: album_id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      responses:
+        '200':
+          description: Album deleted successfully
+        '403':
+          description: Forbidden - Admins only
+        '404':
+          description: Album not found
+
+  /orders:
+    get:
+      summary: Get all orders for current user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of user's orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthorized
+
+    post:
+      summary: Create a new order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - album_id
+                - quantity
+              properties:
+                album_id:
+                  type: integer
+                  example: 1
+                quantity:
+                  type: integer
+                  example: 2
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input or insufficient stock
+        '401':
+          description: Unauthorized
+
+  /orders/{order_id}:
+    get:
+      summary: Get order by ID (must belong to current user or admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: order_id
+          required: true
+          schema:
+            type: integer
+          description: Order ID
+      responses:
+        '200':
+          description: Order data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '403':
+          description: Forbidden - Not owner or admin
+        '404':
+          description: Order not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete order by ID (must belong to current user or admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: order_id
+          required: true
+          schema:
+            type: integer
+          description: Order ID
+      responses:
+        '200':
+          description: Order deleted successfully
+        '403':
+          description: Forbidden - Not owner or admin
+        '404':
+          description: Order not found
+        '401':
+          description: Unauthorized
+
+  /reviews:
+    get:
+      summary: Get all reviews (public)
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+
+    post:
+      summary: Create a review for an album (authenticated users)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - album_id
+                - rating
+              properties:
+                album_id:
+                  type: integer
+                  example: 1
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                comment:
+                  type: string
+                  example: Loved it!
+      responses:
+        '201':
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /reviews/{review_id}:
+    get:
+      summary: Get review by ID
+      parameters:
+        - in: path
+          name: review_id
+          required: true
+          schema:
+            type: integer
+          description: Review ID
+      responses:
+        '200':
+          description: Review data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: Review not found
+
+    put:
+      summary: Update review by ID (owner only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: review_id
+          required: true
+          schema:
+            type: integer
+          description: Review ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Review updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '403':
+          description: Forbidden - Not owner
+        '404':
+          description: Review not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete review by ID (owner or admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: review_id
+          required: true
+          schema:
+            type: integer
+          description: Review ID
+      responses:
+        '200':
+          description: Review deleted successfully
+        '403':
+          description: Forbidden - Not owner or admin
+        '404':
+          description: Review not found
+        '401':
+          description: Unauthorized

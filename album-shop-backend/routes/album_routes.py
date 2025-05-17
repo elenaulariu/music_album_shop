@@ -27,7 +27,7 @@ def create_album():
             genre=data['genre'],
             price=float(data['price']),
             quantity=int(data['quantity']),
-            image_url=data.get('image_url')  # ✅ NEW
+            image_url=data.get('image_url')
         )
         db.session.add(album)
         db.session.commit()
@@ -36,7 +36,7 @@ def create_album():
             'album': {
                 'id': album.id,
                 'title': album.title,
-                'image_url': album.image_url  # ✅ NEW
+                'image_url': album.image_url 
             }
         }), 201
     except Exception as e:
@@ -54,7 +54,7 @@ def get_albums():
         'genre': album.genre,
         'price': album.price,
         'quantity': album.quantity,
-        'image_url': album.image_url  # ✅ NEW
+        'image_url': album.image_url 
     } for album in albums]), 200
 
 # Read Single Album (Public)
@@ -72,7 +72,7 @@ def get_album(album_id):
         'genre': album.genre,
         'price': album.price,
         'quantity': album.quantity,
-        'image_url': album.image_url  # ✅ NEW
+        'image_url': album.image_url 
     }), 200
 
 # Update Album (Admin Only)
@@ -98,7 +98,7 @@ def update_album(album_id):
         album.genre = data.get('genre', album.genre)
         album.price = float(data.get('price', album.price))
         album.quantity = int(data.get('quantity', album.quantity))
-        album.image_url = data.get('image_url', album.image_url)  # ✅ NEW
+        album.image_url = data.get('image_url', album.image_url) 
         db.session.commit()
         return jsonify({'message': 'Album updated'}), 200
     except Exception as e:
